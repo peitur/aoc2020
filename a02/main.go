@@ -81,6 +81,12 @@ func readFile( filename string ) ([]string, error) {
 	return ret, nil
 }
 
+func charInPosition( p int64, s string ) byte {
+	blist := []byte( s )
+	return blist[ p - 1]
+} 
+
+
 func main( ){
 	data,err := readFile( "input")
 	if err != nil {
@@ -88,22 +94,41 @@ func main( ){
 		os.Exit(1)
 	}
 
-	var nvalid int = 0
+	var nvalid1 int = 0
 	for x := range( data ) {
 		line := data[x]
 
 		item := parseLine( line )
 		cnum := int64( charCount( item.Char, item.String ) )
 
-		if item.Min < cnum && item.Max <= cnum {
-			fmt.Printf( "OK [%d:%d] > %s \n", len( item.String), cnum, line )
-			nvalid++
-		}else{
-			fmt.Printf( "FF [%d:%d] > %s \n", len( item.String), cnum, line )
-		} 
-
-//		fmt.Println( line )
+		if cnum >= item.Min {
+			if cnum <= item.Max {
+				fmt.Printf( "OK [%d:%d] { %d <= %d <= %d } > %s \n", len( item.String), cnum, item.Min, cnum, item.Max, line )
+				nvalid1++
+			}
+		}
 	}
 
-	fmt.Println("Number of valid passwords: ", nvalid )
+	fmt.Println("1: Number of valid passwords: ", nvalid1 )
+
+	var nvalid2 int = 0
+	for x := range( data ) {
+		line := data[x]
+
+		item := parseLine( line )
+		c1 := charInPosition( item.Min , item.String )
+		c2 := charInPosition( item.Max, item.String )
+
+		if c1 == item.Char && c2 != item.Char {
+//			fmt.Printf(">>> %d:%c | %d:%c : %s\n", item.Min, c1, item.Max, c2, item.String )
+			nvalid2++
+		}
+		if c1 != item.Char && c2 == item.Char {
+			nvalid2++
+		}
+
+	}
+
+	fmt.Println("2: Number of valid passwords: ", nvalid2 )
+
 }
