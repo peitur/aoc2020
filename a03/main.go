@@ -72,6 +72,7 @@ func main( ){
 		os.Exit(1)
 	}
 
+	hitList := []int{}
 	skips := [5][2]int{ {1,1},{3,1},{5,1},{7,1},{1,2} }
 
 	for i := 0; i < len(  skips ); i++ {
@@ -90,7 +91,13 @@ func main( ){
 			hpos += v[0]
 			vpos += v[1]
 		}
-
-		fmt.Printf("\nHit %d trees\n", hitTree )
+		hitList = append( hitList, hitTree )
+		fmt.Printf("Hit %d trees\n", hitTree )
 	}
+
+	hitProd := 1
+	for i := range( hitList ) {
+		hitProd = hitProd * hitList[i]
+	}
+	fmt.Printf("Hit Product: %d \n", hitProd )
 }
