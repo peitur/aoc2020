@@ -72,10 +72,30 @@ func main( ){
 		os.Exit(1)
 	}
 
-	for n := range( data ){
+	var hitTree int = 0
+	var hpos int = 0
+	for vpos := 0; vpos < len( data ); vpos++ {
+		line := []byte( data[vpos] )
+
+		c := charPositionInLine( line, hpos)
+		if isTree( c ){
+			hitTree++
+		}
+
+		hpos += 3
+
+		/*
+		if isTree( charPositionInLine( line, hpos ) ){
+			fmt.Printf( "%c : %d:%d\n", charPositionInLine( line, hpos), hpos, vpos )
+			hitTree++
+		}
+		*/
+		/*
 		for i := 0; i < 64; i++ {
 			fmt.Printf( "%c", charPositionInLine( []byte( data[n] ), i ) )
 		}
 		fmt.Println()
+		*/
 	}
+	fmt.Printf("\nHit %d trees\n", hitTree )
 }
