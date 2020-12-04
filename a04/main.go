@@ -24,6 +24,15 @@ func NewPassport() *Passport {
 	return new( Passport )
 }
 
+func (p *Passport ) validByr( ) bool { return true }
+func (p *Passport ) validIyr( ) bool { return true }
+func (p *Passport ) validEyr( ) bool { return true }
+func (p *Passport ) validHgt( ) bool { return true }
+func (p *Passport ) validHcl( ) bool { return true }
+func (p *Passport ) validEcl( ) bool { return true }
+func (p *Passport ) validPid( ) bool { return true }
+func (p *Passport ) validCid( ) bool { return true }
+
 func (p *Passport ) validPassportIsh( ) bool {
 	if p.byr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.byr ){ return false }	
 	if p.iyr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.iyr ){ return false }	
@@ -35,6 +44,19 @@ func (p *Passport ) validPassportIsh( ) bool {
 //	if p.cid == "" { return false } else if ! regexp.MustCompile(`_^[0-9]+$`).MatchString( p.cid ){ return false }	
 	return true
 }
+
+func (p *Passport ) validPassportStrict( ) bool {
+	if p.byr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.byr ){ return false }	
+	if p.iyr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.iyr ){ return false }	
+	if p.eyr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.eyr ){ return false }	
+	if p.hgt == "" { return false } // else if ! regexp.MustCompile(`[0-9]+(cm|in)`).MatchString( p.hcl ){ return false }
+	if p.hcl == "" { return false } // else if ! regexp.MustCompile(`#[0-9a-fA-F]+`).MatchString( p.hcl ){ return false }
+	if p.ecl == "" { return false } // else if ! regexp.MustCompile(`[a-fA-F]{3}`).MatchString( p.ecl ){ return false }	
+	if p.pid == "" { return false } // else if ! regexp.MustCompile(`[0-9]+`).MatchString( p.pid ){ return false }	
+//	if p.cid == "" { return false } else if ! regexp.MustCompile(`_^[0-9]+$`).MatchString( p.cid ){ return false }	
+	return true
+}
+
 
 func (p *Passport) printPassport() {
 	
