@@ -39,19 +39,19 @@ func (p *Passport ) validPassportIsh( ) bool {
 func (p *Passport) printPassport() {
 	
 	if 	p.validPassportIsh() { 
-		fmt.Printf(" OK")
+		fmt.Printf("%-6s", "OK" )
 	}else{
-		fmt.Printf(" BAD")
+		fmt.Printf("%-6s", "BAD" )
 	}
 
-	fmt.Printf(" >> byr: %d", p.byr )
-	fmt.Printf(" >> iyr: %d", p.iyr )
-	fmt.Printf(" >> eyr: %d", p.eyr )
-	fmt.Printf(" >> hgt: %s", p.hgt )
-	fmt.Printf(" >> hcl: %s", p.hcl )
-	fmt.Printf(" >> ecl: %s", p.ecl )
-	fmt.Printf(" >> pid: %d", p.pid )
-	fmt.Printf(" >> cid: %d", p.cid )
+	fmt.Printf(" >> byr: %-6d", p.byr )
+	fmt.Printf(" >> iyr: %-6d", p.iyr )
+	fmt.Printf(" >> eyr: %-6d", p.eyr )
+	fmt.Printf(" >> hgt: %-8s", p.hgt )
+	fmt.Printf(" >> hcl: %-8s", p.hcl )
+	fmt.Printf(" >> ecl: %-10s", p.ecl )
+	fmt.Printf(" >> pid: %-12d", p.pid )
+	fmt.Printf(" >> cid: %-6d", p.cid )
 	fmt.Printf("\n")
 }
 
@@ -149,5 +149,5 @@ func main( ){
 			validPassports++
 		}
 	}
-	fmt.Printf("Number of valid passports : %d\n", validPassports )
+	fmt.Printf("Number of valid(ish) passports : %d\n", validPassports )
 }
