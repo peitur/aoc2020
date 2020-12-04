@@ -55,13 +55,14 @@ func (p *Passport ) validEyr( ) bool {
 func (p *Passport ) validHgt( ) bool {
 	if p.hgt == "" { return false }
 
-	parts := regexp.MustCompile(`([0-9]+)(cm|in|\s*)`).FindAllString( p.hgt, -1 )
+	parts := regexp.MustCompile(`([0-9]+)(\S*)`).FindAllStringSubmatch( p.hgt, -1 )
 	b, err := strconv.ParseInt( string( parts[0][1]), 10, 64 )	
 	if err != nil { return false }
 
 	if len( parts[0] ) == 3 {
 		if string( parts[0][2] ) == "cm" {
 			if b < 150 || b > 193 { return false }
+
 		} else if string( parts[0][2] ) == "in" {
 			if b < 59 || b > 76 { return false }
 		}
@@ -215,7 +216,7 @@ func readFile( filename string ) ([]string, error) {
 
 
 func main( ){
-	data,err := readFile( "input")
+	data,err := readFile( "test")
 	if err != nil {
 		fmt.Println("ERROR, no input file: ", err)
 		os.Exit(1)
@@ -228,7 +229,6 @@ func main( ){
 	fmt.Printf("Found %d passorts in document\n", len( passports ))
 	for i := range( passports ){
 		p := passports[i]
-
 		if p.validPassportIsh(){
 			validPassportsIsh++
 		}
@@ -236,12 +236,15 @@ func main( ){
 
 	for i := range( passports ){
 		p := passports[i]
-		p.printPassport()
-
 		if p.validPassportStrict(){
 			validPassportsStrict++
 		}
 	}
+
+	for i := range( passports ){
+		passports[i].printPassport()
+	}
+
 
 	fmt.Printf("Number of valid(ish) passports : %d\n", validPassportsIsh )
 	fmt.Printf("Number of valid strict passports : %d\n", validPassportsStrict )
