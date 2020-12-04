@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"regexp"
 	"strings"
+	"strconv"
 )
 
 type Passport struct {
@@ -24,43 +25,104 @@ func NewPassport() *Passport {
 	return new( Passport )
 }
 
-func (p *Passport ) validByr( ) bool { return true }
-func (p *Passport ) validIyr( ) bool { return true }
-func (p *Passport ) validEyr( ) bool { return true }
-func (p *Passport ) validHgt( ) bool { return true }
-func (p *Passport ) validHcl( ) bool { return true }
-func (p *Passport ) validEcl( ) bool { return true }
-func (p *Passport ) validPid( ) bool { return true }
-func (p *Passport ) validCid( ) bool { return true }
+func (p *Passport ) validByr( ) bool { 
+	b, err := strconv.ParseInt( p.byr, 10, 64 )	
+	if err != nil { return false }
+	if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.byr ) { return false  }
+	if b < 1929 || b > 2002 { return false }
+
+	return true 
+}
+
+func (p *Passport ) validIyr( ) bool { 
+	b, err := strconv.ParseInt( p.iyr, 10, 64 )
+	if err != nil { return false }
+	if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.iyr ) { return false  }
+	if b < 2010 || b > 2020 { return false }
+
+	return true 
+}
+
+func (p *Passport ) validEyr( ) bool {
+	b, err := strconv.ParseInt( p.eyr, 10, 64 )	
+	if err != nil { return false }
+	if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.eyr ) { return false  }
+	if b < 2020 || b > 2030 { return false }
+
+	return true
+}
+
+func (p *Passport ) validHgt( ) bool {
+	if p.hgt == "" { return false }
+
+	parts := regexp.MustCompile(`([0-9]+)(cm|in|\s*)`).FindAllString( p.hgt, -1 )
+	b, err := strconv.ParseInt( string( parts[0][1]), 10, 64 )	
+	if err != nil { return false }
+
+	if len( parts[0] ) == 3 {
+		if string( parts[0][2] ) == "cm" {
+			if b < 150 || b > 193 { return false }
+		} else if string( parts[0][2] ) == "in" {
+			if b < 59 || b > 76 { return false }
+		}
+	}
+
+	return true 
+}
+
+func (p *Passport ) validEcl( ) bool { 
+	if regexp.MustCompile(`(amb|blu|brn|gry|grn|hzl|oth)`).MatchString( p.ecl ){ return true }
+	return false
+}
+
+func (p *Passport ) validHcl( ) bool { 
+	if regexp.MustCompile(`#[0-9a-fA-F]{6}`).MatchString( p.hcl ){ return true }
+	return false
+}
+
+func (p *Passport ) validPid( ) bool { 
+	if regexp.MustCompile(`[0-9]{9}`).MatchString( p.pid ){ return true }	
+	return false
+}
+
+func (p *Passport ) validCid( ) bool { 
+	return true
+}
 
 func (p *Passport ) validPassportIsh( ) bool {
-	if p.byr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.byr ){ return false }	
-	if p.iyr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.iyr ){ return false }	
-	if p.eyr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.eyr ){ return false }	
-	if p.hgt == "" { return false } // else if ! regexp.MustCompile(`[0-9]+(cm|in)`).MatchString( p.hcl ){ return false }
-	if p.hcl == "" { return false } // else if ! regexp.MustCompile(`#[0-9a-fA-F]+`).MatchString( p.hcl ){ return false }
-	if p.ecl == "" { return false } // else if ! regexp.MustCompile(`[a-fA-F]{3}`).MatchString( p.ecl ){ return false }	
-	if p.pid == "" { return false } // else if ! regexp.MustCompile(`[0-9]+`).MatchString( p.pid ){ return false }	
-//	if p.cid == "" { return false } else if ! regexp.MustCompile(`_^[0-9]+$`).MatchString( p.cid ){ return false }	
+	if p.byr == "" { return false } 
+	if p.iyr == "" { return false } 
+	if p.eyr == "" { return false } 
+	if p.hgt == "" { return false }
+	if p.hcl == "" { return false } 
+	if p.ecl == "" { return false }
+	if p.pid == "" { return false }
+//	if p.cid == "" { return false }
 	return true
 }
 
 func (p *Passport ) validPassportStrict( ) bool {
-	if p.byr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.byr ){ return false }	
-	if p.iyr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.iyr ){ return false }	
-	if p.eyr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.eyr ){ return false }	
-	if p.hgt == "" { return false } // else if ! regexp.MustCompile(`[0-9]+(cm|in)`).MatchString( p.hcl ){ return false }
-	if p.hcl == "" { return false } // else if ! regexp.MustCompile(`#[0-9a-fA-F]+`).MatchString( p.hcl ){ return false }
-	if p.ecl == "" { return false } // else if ! regexp.MustCompile(`[a-fA-F]{3}`).MatchString( p.ecl ){ return false }	
-	if p.pid == "" { return false } // else if ! regexp.MustCompile(`[0-9]+`).MatchString( p.pid ){ return false }	
-//	if p.cid == "" { return false } else if ! regexp.MustCompile(`_^[0-9]+$`).MatchString( p.cid ){ return false }	
+	if ! p.validByr() { return false }
+	if ! p.validIyr() { return false }
+	if ! p.validEyr() { return false }
+	if ! p.validHgt() { return false }
+	if ! p.validHcl() { return false }
+	if ! p.validEcl() { return false }
+	if ! p.validPid() { return false }
+	if ! p.validCid() { return false }
 	return true
 }
 
 
 func (p *Passport) printPassport() {
-	
+
 	if 	p.validPassportIsh() { 
+		fmt.Printf("%-6s", "OK" )
+	}else{
+		fmt.Printf("%-6s", "BAD" )
+	}
+
+	if 	p.validPassportStrict() { 
 		fmt.Printf("%-6s", "OK" )
 	}else{
 		fmt.Printf("%-6s", "BAD" )
@@ -159,17 +221,29 @@ func main( ){
 		os.Exit(1)
 	}
 
-	var validPassports int = 0
+	var validPassportsIsh int = 0
+	var validPassportsStrict int = 0
 	var passports []*Passport = parsePassports( data )
 
 	fmt.Printf("Found %d passorts in document\n", len( passports ))
 	for i := range( passports ){
 		p := passports[i]
-		p.printPassport()
 
 		if p.validPassportIsh(){
-			validPassports++
+			validPassportsIsh++
 		}
 	}
-	fmt.Printf("Number of valid(ish) passports : %d\n", validPassports )
+
+	for i := range( passports ){
+		p := passports[i]
+		p.printPassport()
+
+		if p.validPassportStrict(){
+			validPassportsStrict++
+		}
+	}
+
+	fmt.Printf("Number of valid(ish) passports : %d\n", validPassportsIsh )
+	fmt.Printf("Number of valid strict passports : %d\n", validPassportsStrict )
+
 }
