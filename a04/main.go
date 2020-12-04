@@ -2,21 +2,21 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"os"
 	"bufio"
 	"regexp"
+	"strings"
 )
 
 type Passport struct {
-	byr int64 
-	iyr int64
-	eyr int64
+	byr string 
+	iyr string
+	eyr string
 	hgt string
 	hcl string
 	ecl string
-	pid int64
-	cid int64
+	pid string
+	cid string
 }
 
 
@@ -25,14 +25,14 @@ func NewPassport() *Passport {
 }
 
 func (p *Passport ) validPassportIsh( ) bool {
-	if p.byr == 0 { return false }
-	if p.iyr == 0 { return false }
-	if p.eyr == 0 { return false }
-	if p.hgt == "" { return false }
-	if p.hcl == "" { return false }
-	if p.ecl == "" { return false }
-	if p.pid == 0 { return false }
-//	if p.cid == 0 { return false }
+	if p.byr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.byr ){ return false }	
+	if p.iyr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.iyr ){ return false }	
+	if p.eyr == "" { return false } // else if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.eyr ){ return false }	
+	if p.hgt == "" { return false } // else if ! regexp.MustCompile(`[0-9]+(cm|in)`).MatchString( p.hcl ){ return false }
+	if p.hcl == "" { return false } // else if ! regexp.MustCompile(`#[0-9a-fA-F]+`).MatchString( p.hcl ){ return false }
+	if p.ecl == "" { return false } // else if ! regexp.MustCompile(`[a-fA-F]{3}`).MatchString( p.ecl ){ return false }	
+	if p.pid == "" { return false } // else if ! regexp.MustCompile(`[0-9]+`).MatchString( p.pid ){ return false }	
+//	if p.cid == "" { return false } else if ! regexp.MustCompile(`_^[0-9]+$`).MatchString( p.cid ){ return false }	
 	return true
 }
 
@@ -44,14 +44,14 @@ func (p *Passport) printPassport() {
 		fmt.Printf("%-6s", "BAD" )
 	}
 
-	fmt.Printf(" >> byr: %-6d", p.byr )
-	fmt.Printf(" >> iyr: %-6d", p.iyr )
-	fmt.Printf(" >> eyr: %-6d", p.eyr )
+	fmt.Printf(" >> byr: %-6s", p.byr )
+	fmt.Printf(" >> iyr: %-6s", p.iyr )
+	fmt.Printf(" >> eyr: %-6s", p.eyr )
 	fmt.Printf(" >> hgt: %-8s", p.hgt )
 	fmt.Printf(" >> hcl: %-8s", p.hcl )
 	fmt.Printf(" >> ecl: %-10s", p.ecl )
-	fmt.Printf(" >> pid: %-12d", p.pid )
-	fmt.Printf(" >> cid: %-6d", p.cid )
+	fmt.Printf(" >> pid: %-12s", p.pid )
+	fmt.Printf(" >> cid: %-6s", p.cid )
 	fmt.Printf("\n")
 }
 
@@ -66,14 +66,14 @@ func parsePassport( data []string ) *Passport {
 		for x := range( xl ){
 			ld := fx.Split( xl[x] , -1 )
 
-			if ld[0] == "byr" { r.byr, _ = strconv.ParseInt( ld[1], 10, 64 ) }
-			if ld[0] == "iyr" { r.iyr, _ = strconv.ParseInt( ld[1], 10, 64 ) }
-			if ld[0] == "eyr" { r.eyr, _ = strconv.ParseInt( ld[1], 10, 64 ) }
-			if ld[0] == "hgt" { r.hgt = ld[1] }
-			if ld[0] == "hcl" { r.hcl = ld[1] }
-			if ld[0] == "ecl" { r.ecl = ld[1] }
-			if ld[0] == "pid" { r.pid, _ = strconv.ParseInt( ld[1], 10, 64 ) }
-			if ld[0] == "cid" { r.cid, _ = strconv.ParseInt( ld[1], 10, 64 ) }
+			if ld[0] == "byr" { r.byr = strings.TrimSpace( ld[1] ) }
+			if ld[0] == "iyr" { r.iyr = strings.TrimSpace( ld[1] ) }
+			if ld[0] == "eyr" { r.eyr = strings.TrimSpace( ld[1] ) }
+			if ld[0] == "hgt" { r.hgt = strings.TrimSpace( ld[1] ) }
+			if ld[0] == "hcl" { r.hcl = strings.TrimSpace( ld[1] ) }
+			if ld[0] == "ecl" { r.ecl = strings.TrimSpace( ld[1] ) }
+			if ld[0] == "pid" { r.pid = strings.TrimSpace( ld[1] ) }
+			if ld[0] == "cid" { r.cid = strings.TrimSpace( ld[1] ) }
 
 		}
 	}
@@ -90,7 +90,7 @@ func parsePassports( data []string ) []*Passport {
 			passports = append( passports, parsePassport( pl ))
 			pl = []string{}
 		}else{
-			pl = append( pl, data[i] )
+			pl = append( pl, strings.TrimSpace( data[i] ) )
 		}
 	}
 
