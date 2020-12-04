@@ -28,8 +28,8 @@ func NewPassport() *Passport {
 func (p *Passport ) validByr( ) bool { 
 	b, err := strconv.ParseInt( p.byr, 10, 64 )	
 	if err != nil { return false }
-	if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.byr ) { return false  }
-	if b < 1929 || b > 2002 { return false }
+	if ! regexp.MustCompile(`^[0-9]{4}$`).MatchString( p.byr ) { return false  }
+	if b < 1920 || b > 2002 { return false }
 
 	return true 
 }
@@ -37,52 +37,57 @@ func (p *Passport ) validByr( ) bool {
 func (p *Passport ) validIyr( ) bool { 
 	b, err := strconv.ParseInt( p.iyr, 10, 64 )
 	if err != nil { return false }
-	if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.iyr ) { return false  }
+	if ! regexp.MustCompile(`^[0-9]{4}$`).MatchString( p.iyr ) { return false  }
 	if b < 2010 || b > 2020 { return false }
-
 	return true 
 }
 
 func (p *Passport ) validEyr( ) bool {
 	b, err := strconv.ParseInt( p.eyr, 10, 64 )	
 	if err != nil { return false }
-	if ! regexp.MustCompile(`[0-9]{4}`).MatchString( p.eyr ) { return false  }
+	if ! regexp.MustCompile(`^[0-9]{4}$`).MatchString( p.eyr ) { return false  }
 	if b < 2020 || b > 2030 { return false }
-
 	return true
 }
 
 func (p *Passport ) validHgt( ) bool {
 	if p.hgt == "" { return false }
 
-	parts := regexp.MustCompile(`([0-9]+)(\S*)`).FindAllStringSubmatch( p.hgt, -1 )
-	b, err := strconv.ParseInt( string( parts[0][1]), 10, 64 )	
-	if err != nil { return false }
+	parts := regexp.MustCompile(`^([0-9]+)(cm|in)$`).FindAllStringSubmatch( p.hgt, -1 )
+	if len( parts ) > 0 {
 
-	if len( parts[0] ) == 3 {
-		if string( parts[0][2] ) == "cm" {
-			if b < 150 || b > 193 { return false }
+		if len( parts[0] ) == 3 {
+			b, err := strconv.ParseInt( string( parts[0][1]), 10, 64 )	
+			if err != nil { return false }
 
-		} else if string( parts[0][2] ) == "in" {
-			if b < 59 || b > 76 { return false }
+			if string( parts[0][2] ) == "cm" {
+				if b < 150 || b > 193 { return false }
+
+			} else if string( parts[0][2] ) == "in" {
+				if b < 59 || b > 76 { return false }
+			}
 		}
+	}else{ 
+		return false 
 	}
 
 	return true 
 }
 
 func (p *Passport ) validEcl( ) bool { 
-	if regexp.MustCompile(`(amb|blu|brn|gry|grn|hzl|oth)`).MatchString( p.ecl ){ return true }
+	if regexp.MustCompile(`^(amb|blu|brn|gry|grn|hzl|oth)$`).MatchString( p.ecl ){ return true }
 	return false
 }
 
 func (p *Passport ) validHcl( ) bool { 
-	if regexp.MustCompile(`#[0-9a-fA-F]{6}`).MatchString( p.hcl ){ return true }
+	if regexp.MustCompile(`^#[0-9a-f]{6}$`).MatchString( p.hcl ){ return true }
 	return false
 }
 
 func (p *Passport ) validPid( ) bool { 
-	if regexp.MustCompile(`[0-9]{9}`).MatchString( p.pid ){ return true }	
+	if regexp.MustCompile(`^[0-9]{9}$`).MatchString( p.pid ){ return true }
+
+
 	return false
 }
 
@@ -216,7 +221,7 @@ func readFile( filename string ) ([]string, error) {
 
 
 func main( ){
-	data,err := readFile( "test")
+	data,err := readFile( "input")
 	if err != nil {
 		fmt.Println("ERROR, no input file: ", err)
 		os.Exit(1)
