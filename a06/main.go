@@ -11,8 +11,23 @@ import (
 //	"strconv"
 )
 
+func groupKeys( group map[byte]int ) []byte {
+	var kList []byte = []byte{}
+	for k := range( group ){
+		kList = append( kList, k )
+	}
+	return kList
+}
+
 func parseGroupItems( group string ) map[byte]int {
 	var keys map[byte]int = map[byte]int{}
+
+	for _, b := range( []byte( group) ){
+		if _, ok := keys[ b ]; !ok {
+			keys[ b ] = 0
+		}
+		keys[b]++
+	}
 
 	return keys
 }
@@ -73,8 +88,12 @@ func main( ) {
 	}
 
 	groups := parseGroups( data )
+	var groupSumAns int = 0
 	for _, item := range( groups ){
-		fmt.Println( item )
-	}
+		groupMap := parseGroupItems( item )
+		groupAns := len( groupKeys( groupMap ) )
 
+		groupSumAns += groupAns
+	}
+	fmt.Printf("Sum Anyone: %d\n", groupSumAns )
 }
