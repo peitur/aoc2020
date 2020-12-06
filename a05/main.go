@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"regexp"
 	"math"
+	"sort"
 //	"strings"
 //	"strconv"
 )
@@ -15,9 +16,6 @@ type PositionRaw struct {
 	column []byte
 }
 
-type PlainMap struct {
-
-}
 
 const LENGTH=128
 const WIDTH=8
@@ -150,12 +148,31 @@ func main( ) {
 
 	var topSid int = 0
 	for _, p := range( iterData( data ) ){
-		p.Print()
 		sid := p.SeatId()
 		if sid > topSid{
 			topSid = sid
 		}
 	}
 	fmt.Printf("\nTop ID: %d\n", topSid )
+
+	var slist []int = []int{}
+	for _, p := range( iterData( data ) ){
+		sid := p.SeatId()
+		slist = append( slist, sid )
+	}
 	
+	sort.Ints( slist )
+	mySeat := 0
+//	startSeat := slist[0]
+//	lastSeat  := slist[ len( slist ) - 1 ] 
+	for i := 1; i < len( slist ) - 1; i++ {
+		pseat := slist[i-1]
+		xseat := slist[i] 
+		nseat := slist[i+1]
+		if (xseat - pseat) > 1 || (nseat - xseat) > 1{
+			fmt.Printf("P:%d X:%d N:%d \n", pseat, xseat, nseat)
+			mySeat = xseat
+		}
+	}
+	fmt.Printf("MySeat: %d\n", mySeat - 1 )
 }
