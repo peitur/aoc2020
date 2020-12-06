@@ -11,6 +11,41 @@ import (
 //	"strconv"
 )
 
+type Ansvers struct {
+	ansvers []string
+	size int
+}
+
+func NewAnsvers( astrings []string ) *Ansvers {
+	var a *Ansvers = new( Ansvers )
+	a.ansvers = astrings
+	a.size = len( astrings )
+	return a
+}
+
+func (a *Ansvers ) InOneAnsves( ) string {
+	return strings.Join( a.ansvers, "" )
+}
+
+func (a *Ansvers ) Size( ) int {
+	return a.size
+}
+
+func (a *Ansvers) AnsveredByAll( ) int {
+	var items map[byte]int = parseGroupItems( a.InOneAnsves() )
+	var sumSeen int = 0
+	for item := range( items ){
+		if items[item] == a.size {
+			sumSeen++
+		}
+	}
+	return sumSeen
+}
+
+/*
+For each group, get map for 
+Number of ansvers eq number of people
+*/
 func groupKeys( group map[byte]int ) []byte {
 	var kList []byte = []byte{}
 	for k := range( group ){
@@ -33,13 +68,13 @@ func parseGroupItems( group string ) map[byte]int {
 }
 
 
-func parseGroups( data []string ) []string {
+func parseGroups( data []string ) []*Ansvers {
 
-	var groups []string = []string{}
+	var groups []*Ansvers
 	pl := []string{}
 	for i := range( data ){
 		if len( data[i]) == 0 {
-			groups = append( groups, strings.Join( pl, "" ) )
+			groups = append( groups, NewAnsvers( pl ) )
 			pl = []string{}
 		}else{
 			pl = append( pl, strings.TrimSpace( data[i] ) )
@@ -47,7 +82,7 @@ func parseGroups( data []string ) []string {
 	}
 
 	if len( pl ) > 0{
-		groups = append( groups, strings.Join( pl, "" ) )
+		groups = append( groups, NewAnsvers( pl ) )
 	}
 	
 	return groups
@@ -89,11 +124,17 @@ func main( ) {
 
 	groups := parseGroups( data )
 	var groupSumAns int = 0
+	var peopleSumAns int = 0
+
 	for _, item := range( groups ){
-		groupMap := parseGroupItems( item )
+		groupMap := parseGroupItems( item.InOneAnsves() )
 		groupAns := len( groupKeys( groupMap ) )
+		seenByAll := item.AnsveredByAll()
 
 		groupSumAns += groupAns
+		peopleSumAns += seenByAll
 	}
 	fmt.Printf("Sum Anyone: %d\n", groupSumAns )
+	fmt.Printf("Sum SeenBy All in group: %d\n", peopleSumAns )
+
 }
